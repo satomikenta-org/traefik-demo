@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+  reverse-proxy:
+    # The official v2 Traefik docker image
+    image: traefik:v2.3
+    command: --api.insecure=true --providers.docker=true
+    ports:
+      # The HTTP port
+      - "80:80"
+      # The Web UI (enabled by --api.insecure=true)
+      - "8080:8080"
+    volumes:
+      # So that Traefik can listen to the Docker events
+      - /var/run/docker.sock:/var/run/docker.sock
+  backend-api-server:
+    image: traefik/whoami
+    labels:
+      - "traefik.http.routers.api.rule=Host(`api`)"
+      - "traefik.http.middlewares.restriction.ipwhitelist.sourcerange=20.9.54.3"
+      - "traefik.http.routers.api.middlewares=restriction@docker"
+  frontend-web-server:
+    image: traefik/whoami
+    labels:
+      - "traefik.http.routers.frontend.rule=Host(`localhost`)"
+      # password must be hashed !!
+      # echo $(htpasswd -nb testuser test-password) | sed -e s/\\$/\\$\\$/g 
+      - "traefik.http.middlewares.my-basic-auth.basicauth.users=testuser:$$apr1$$.ve.rm1c$$QjWewaIB76pW1FecJvWMs/"
+      - "traefik.http.routers.frontend.middlewares=my-basic-auth@docker"
