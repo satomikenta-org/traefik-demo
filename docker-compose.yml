@@ -16,14 +16,14 @@ services:
   backend-api-server:
     image: traefik/whoami
     labels:
-      - "traefik.http.routers.api.rule=Host(`api`)"
-      - "traefik.http.middlewares.restriction.ipwhitelist.sourcerange=20.9.54.3"
-      - "traefik.http.routers.api.middlewares=restriction@docker"
+      - "traefik.http.routers.api.rule=Host(`api`)" # rule 定義&登録
+      - "traefik.http.middlewares.restriction.ipwhitelist.sourcerange=20.9.54.3" # middleware 定義
+      - "traefik.http.routers.api.middlewares=restriction@docker" # middleware 登録
   frontend-web-server:
     image: traefik/whoami
     labels:
-      - "traefik.http.routers.frontend.rule=Host(`localhost`)"
+      - "traefik.http.routers.frontend.rule=Host(`localhost`)" # rule 定義&登録
       # password must be hashed !!
       # echo $(htpasswd -nb testuser test-password) | sed -e s/\\$/\\$\\$/g 
-      - "traefik.http.middlewares.my-basic-auth.basicauth.users=testuser:$$apr1$$.ve.rm1c$$QjWewaIB76pW1FecJvWMs/"
-      - "traefik.http.routers.frontend.middlewares=my-basic-auth@docker"
+      - "traefik.http.middlewares.my-basic-auth.basicauth.users=testuser:$$apr1$$.ve.rm1c$$QjWewaIB76pW1FecJvWMs/" # middleware 定義
+      - "traefik.http.routers.frontend.middlewares=my-basic-auth@docker" # middleware 登録
